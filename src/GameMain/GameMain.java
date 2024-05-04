@@ -37,34 +37,34 @@ public class GameMain {
                 case 1:
                     p.moveUp(m);
                     updateGame(m, p, i);                       
-                    m.drawMap();
+                    m.drawMap(p);
                     p.showState();
                     break;
 
                 case 2:
                     p.moveDown(m);
                     updateGame(m, p, i);
-                    m.drawMap();
+                    m.drawMap(p);
                     p.showState();
                     break;
 
                 case 3:
                     p.moveLeft(m);
                     updateGame(m, p, i);
-                    m.drawMap();
+                    m.drawMap(p);
                     p.showState();
                     break;
 
                 case 4:
                     p.moveRight(m);
                     updateGame(m, p, i);
-                    m.drawMap();
+                    m.drawMap(p);
                     p.showState();
                     break;
 
                 case 5:
                     updateGame(m, p, i);
-                    m.drawMap();
+                    m.drawMap(p);
                     p.showState();
                     break;
 
@@ -150,7 +150,7 @@ public class GameMain {
                 else System.out.println("Invalid choice");
             }while(status == true);
             System.out.println("\n------------------------------------------------------\n");
-            m.drawMap();
+            m.drawMap(p);
             p.showState();
         }
     }
@@ -167,9 +167,9 @@ public class GameMain {
     }
     public void attackMenu(Map m, Player obj){
         ArrayList<Monster> targets = new ArrayList<Monster>();
-        for(int i = 0; i < m.monsters.size(); i++){
-            if(isInRange(obj, m.monsters.get(i)))
-                targets.add(m.monsters.get(i));
+        for(int i = 0; i < m.numberOfMonsters(); i++){
+            if(isInRange(obj, m.getMonsterAtIndex(i)))
+                targets.add(m.getMonsterAtIndex(i));
         }
         System.out.printf("|%10s | %20s | %10s |\n", "No.",
                                                        "Name",
@@ -186,7 +186,7 @@ public class GameMain {
             targets.get(choice - 1).takeDamage(obj.getAttack());
             updateMonsters(m, obj);
             updatePlayer(m, obj);
-            m.drawMap();
+            m.drawMap(obj);
             ((Player) obj).showState();
             targets.clear();
         }
@@ -194,7 +194,7 @@ public class GameMain {
             System.out.println("Invalid choice");
         else{           
             System.out.println("\n------------------------------------------------------\n");
-            m.drawMap();
+            m.drawMap(obj);
         }
     }
 
@@ -242,7 +242,7 @@ public class GameMain {
         key = input.nextLine();
         Inventory inventory = new Inventory(5);
         Map1 map1 = new Map1(this.path, player);
-        map1.drawMap();
+        map1.drawMap(player);
         MainMenu(map1, player, inventory);
     }
     public void updateGame(Map m, Player p, Inventory i){
@@ -252,7 +252,7 @@ public class GameMain {
     }
     public void updatePlayer(Map m, Player p)
     {
-        m.tile[m.tileManager[p.getY()][p.getX()]].applyEffectTo(p);
+        m.getTile(m.getTileManager_RowCol(p.getY(), p.getX())).applyEffectTo(p);
     }
     public void updateItems(Map m, Player p, Inventory i){
         if(m.containItemAt(p.getX(), p.getY())){ 
@@ -264,15 +264,19 @@ public class GameMain {
         } 
     }
     public void updateMonsters(Map m, Player obj){
-        for(int i = 0; i < m.monsters.size(); i++){
-            if(isInRange(m.monsters.get(i), obj)){
-                JOptionPane.showMessageDialog(null, "WARNING: " + m.monsters.get(i).getName() + " attacked you. You lost " + obj.takeDamage(m.monsters.get(i).getAttack()) + " HP!!!");
+        for(int i = 0; i < m.numberOfMonsters(); i++){
+            if(isInRange(m.getMonsterAtIndex(i), obj)){
+                JOptionPane.showMessageDialog(null, "WARNING: " 
+                                                + m.getMonsterAtIndex(i).getName() 
+                                                + " attacked you. You lost " 
+                                                + obj.takeDamage(m.getMonsterAtIndex(i).getAttack()) 
+                                                + " HP!!!");
             }
             else{
-                if(m.monsters.get(i) instanceof RegularMonster)
-                (m.monsters.get(i)).randomMove(m);
-                else if(m.monsters.get(i) instanceof TargetMonster)
-                ((TargetMonster)m.monsters.get(i)).shortestWayMove();
+                if(m.getMonsterAtIndex(i) instanceof RegularMonster)
+                ((RegularMonster)m.getMonsterAtIndex(i)).randomMove(m);
+                else if(m.getMonsterAtIndex(i) instanceof TargetMonster)
+                ((TargetMonster)m.getMonsterAtIndex(i)).moveForwardTo(obj, m);;
             }
         }
     }
@@ -281,20 +285,23 @@ public class GameMain {
     }
     public boolean playerCollideAnyMonster(Map m, Player p){
         boolean status = false;
-        for(int i = 0; i < m.monsters.size(); i++){
-            if(isInRange(p, m.monsters.get(i))){
+        for(int i = 0; i < m.numberOfMonsters(); i++){
+            if(isInRange(p, m.getMonsterAtIndex(i))){
                 status = true;
                 break;
             }
         }
         return status;
     }
+
+    /*
     public void dropItem(Map m){
-        for(int i = 0; i < m.monsters.size(); i++){
-            if(m.monsters.get(i).isDie())
+        for(int i = 0; i < m.numberOfMonsters(); i++){
+            if(m.getItemAtIndex(i).isDie())
                 m.items.add(m.monsters.get(i).lootItem());
         }
     }
+    */
 
     public static void main(String[] args) {
         GameMain gm = new GameMain();

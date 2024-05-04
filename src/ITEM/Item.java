@@ -1,5 +1,6 @@
 package ITEM;
 import CHARACTER.Character;
+import MAP.Map;
 
 public abstract class Item 
 {
@@ -37,6 +38,12 @@ public abstract class Item
     //Setter Methods
     public void setInUse(boolean use)
     {this.inUse = use;}
+    public void setXY(int x, int y)
+    {
+        this.x = x;
+        this.y = y;
+    }
+
 
     //Abstract Methods
     public abstract String getMark();

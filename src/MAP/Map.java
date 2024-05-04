@@ -13,13 +13,14 @@ public class Map
 {
     private final int maxTileCols = 20;
     private final int maxTileRows = 20;
+    private final int maxPossibleTypesOfTile = 4;
 
-    public Tile[] tile;
-    public int[][] tileManager;
+    private Tile[] tile;
+    private int[][] tileManager;
 
     //private Character player;
-    public List<Item> items;
-    public List<Monster> monsters;
+    private List<Item> items;
+    private List<Monster> monsters;
 
 //--------------------------------------------------
 
@@ -34,13 +35,64 @@ public class Map
         loadMap(mapFilePath);
     }
 
+//------------------------------------------ Number of Items and Monster and possile types of tile---------------------------------------------------
+    public int numberOfMonsters()
+    {return this.monsters.size();}
 
+    public int numberOfItems()
+    {return this.items.size();}
+
+    public int numberOfPossibleTypeOfTile()
+    {return this.maxPossibleTypesOfTile;}
+
+//---------------------------------------------- Getter and Setter Method ------------------------------------------------------
+
+    public Monster getMonsterAtIndex(int index)
+    {
+        Monster monsterToGet = null;
+        if(index < 0)
+        {
+            System.out.println("ERROR: Invalid index!");
+        }
+        else
+            monsterToGet = this.monsters.get(index);
+        return monsterToGet;
+    }
+    public Item getItemAtIndex(int index)
+    {
+        Item itemToGet = null;
+        if(index < 0)
+        {
+            System.out.println("ERROR: Invalid index!");
+        }
+        else
+            itemToGet = this.items.get(index);
+        return itemToGet;
+    }
+    public int getTileManager_RowCol(int x, int y)
+    {
+        int result = -1;
+        if(!outOfBorder(y, x))
+        {
+            result = this.tileManager[x][y];
+        }
+        return result;
+    }
+    public Tile getTile(int index)
+    {
+        Tile tileToGet = null;
+        if(0 <= index && index < maxPossibleTypesOfTile)
+        {
+            tileToGet = this.tile[index];
+        }
+        return tileToGet;
+    }
 //---------------------------------------------- Load Map from File ------------------------------------------------------------
 
     public void loadMap(String mapFilePath)
     {
     //Define all possible types of tile on the map
-        this.tile = new Tile[4];
+        this.tile = new Tile[maxPossibleTypesOfTile];
         this.tile[0] = new WallTile();
         this.tile[1] = new LandTile();
         this.tile[2] = new WaterTile();
@@ -202,10 +254,10 @@ public class Map
     //Check if the object out of the border
     public boolean outOfBorder(int x, int y)
     {
-        boolean out = false;
+        boolean out = true;
         if(0 <= x && x < maxTileCols && 0 <= y && y < maxTileRows)
         {
-            out = true;
+            out = false;
         }
         return out;
     }

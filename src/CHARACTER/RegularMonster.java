@@ -56,8 +56,8 @@ public class RegularMonster extends Monster
         {
             ranNum = random.nextInt(itemsToDrop.size()) + 1;            //1,2,3, .... size of itemToDrop
             itemToLoot = itemsToDrop.get(ranNum - 1);
-        }
-        
+            itemToLoot.setXY(this.getX(), this.getY());                  //Make position of monster and item align
+        }   
         return itemToLoot;     
     }
 
